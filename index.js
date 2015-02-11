@@ -46,6 +46,19 @@ module.exports = function (aws, options) {
           headers['Content-Type'] += '; charset=' + options.encoding;
         }
       }
+      
+       if (options.redirect) {
+            for (var key in options.redirect) {
+                if (options.redirect.hasOwnProperty(key)) {
+                    var match = new RegExp(key);
+
+                    if (match.test(file.path)) {
+                        var redirect_path = file.path.replace(file.base, options.uploadPath || '/').replace(match, options.redirect[key]).replace('.gz', '');
+                        headers['x-amz-website-redirect-location'] = redirect_path
+                    }
+                }
+            }
+        }
 
       headers['Content-Length'] = file.stat.size;
 
